@@ -45,42 +45,23 @@
     <properties>
         <verifyAllFailures>true</verifyAllFailures>
         <ignoreAllFailures>false</ignoreAllFailures>
-        <skipInterProcessTests>true</skipInterProcessTests>
-        <skipInProcessTests>true</skipInProcessTests>
+        <skipPostDeploymentTests>true</skipPostDeploymentTests>
+        <skipPreDeploymentTests>true</skipPreDeploymentTests>
+        <preDeploymentTestGroups></preDeploymentTestGroups>
+        <postDeploymentTestGroups></postDeploymentTestGroups>
+        <checkstyleConfigLocation></checkstyleConfigLocation>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <github.organization>entando-k8s-infrastructure</github.organization>
+        <github.organization>entando</github.organization>
         <!--Standard Sonar configuration -->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>${github.organization}</sonar.organization>
         <sonar.projectKey>${github.organization}_${project.artifactId}</sonar.projectKey>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
-
-        <!--dependencies -->
-        <resteasy.version>3.9.3.Final</resteasy.version>
-        <keycloak.version>7.0.1</keycloak.version>
-        <quarkus.version>1.2.0.Final</quarkus.version>
-        <jackson.version>2.10.1</jackson.version>
-        <okhttp.version>3.12.1</okhttp.version>
-        <jcabi.version>1.1</jcabi.version>
-        <commons-lang.version>3.9</commons-lang.version>
-        <fabric8.version>4.7.0</fabric8.version>
-        <prometheus.metrics.version>0.6.0</prometheus.metrics.version>
-        <guava.version>24.1.1-jre</guava.version>
-        <snakeyaml.version>1.23</snakeyaml.version>
-        <slf4j.version>1.7.16</slf4j.version>
+        <!--JDBC Driver versions -->
         <postgresql.driver.version>42.2.8</postgresql.driver.version>
-        <!-- test dependencies -->
-
-        <junit.version>5.4.2</junit.version>
-        <mockito.version>2.23.0</mockito.version>
-        <awaitility.version>4.0.1</awaitility.version>
-        <hamcrest.version>2.1</hamcrest.version>
-        <jaway.jsonpath.version>2.4.0</jaway.jsonpath.version>
-        <jakarta.validation.api.version>2.0.2</jakarta.validation.api.version>
-
         <!-- plugin  versions -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M1</maven-surefire-plugin.version>
@@ -107,6 +88,7 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <!--We need to make sure all HTML reports are generated so that we can link to them from the PR status check-->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
                     <version>${maven-surefire-report-plugin.version}</version>
@@ -150,11 +132,11 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <suppressionFile>${project.basedir}/config/owasp-dependency-check-suppression.xml
-                        </suppressionFile>
+                        <suppressionFile>${owaspSuppressionFileLocation</suppressionFile>
                         <failOnError>true</failOnError>
                         <failBuildOnAnyVulnerability>${verifyAllFailures}</failBuildOnAnyVulnerability>
                         <name>National Vulnerability Database Report</name>
+                        <!--JUNIT/XML required to verify failures from the pipeline-->
                         <formats>HTML,XML,JUNIT</formats>
                         <outputDirectory>target/site</outputDirectory>
                     </configuration>
@@ -190,10 +172,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <skip>${skipInProcessTests}</skip>
+                        <skip>${skipPreDeploymentTests}</skip>
                         <forkCount>1</forkCount>
                         <testFailureIgnore>${ignoreAllFailures}</testFailureIgnore>
-                        <groups>in-process</groups>
+                        <groups>${preDeploymentTestGroups}</groups>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -202,10 +184,10 @@
                     <version>${maven-failsafe-plugin.version}</version>
                     <configuration>
                         <testFailureIgnore>${ignoreAllFailures}</testFailureIgnore>
-                        <skip>${skipInterProcessTests}</skip>
-                        <groups>inter-process</groups>
+                        <skip>${skipPostDeploymentTests}</skip>
+                        <groups>${postDeploymentTestGroups}</groups>
                         <includes>
-                            <include>**/*IntegratedTest.java,**/*IT.java</include>
+                            <include>**/*IntegrationTest.java,**/*IntegratedTest.java,**/*IT.java</include>
                         </includes>
                     </configuration>
                     <executions>
@@ -223,7 +205,7 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <configuration>
-                        <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                        <configLocation>${checkstyleConfigLocation}</configLocation>
                         <encoding>UTF-8</encoding>
                         <consoleOutput>true</consoleOutput>
                         <failsOnError>true</failsOnError>
@@ -293,46 +275,10 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>${maven-shade-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>shade</goal>
-                            </goals>
-                            <configuration>
-                                <createDependencyReducedPom>false</createDependencyReducedPom>
-                                <transformers>
-                                    <transformer
-                                            implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                </transformers>
-                                <filters>
-                                    <filter>
-                                        <artifact>io.fabric8:openshift-client</artifact>
-                                        <excludes>
-                                            <exclude>io/fabric8/kubernetes/client/Config*</exclude>
-                                        </excludes>
-                                    </filter>
-                                </filters>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>io.quarkus</groupId>
-                                <artifactId>quarkus-extension-processor</artifactId>
-                                <version>${quarkus.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
                         <compilerArgs>
-                            <!--<arg>-verbose</arg>-->
                             <arg>-Xlint:unchecked</arg>
                         </compilerArgs>
                     </configuration>
@@ -425,15 +371,12 @@
             <!--This profile is executed right in the beginning of the pipeline. For instance, this is the first step
              that is executed to verify that the changes in the pull request comply to the coding standards in
              Checkstyle, have test sufficient coverage and don't have any dependencies with known vulnerabilities.
-             No inter-process communication should take place during test execution, as no standard communication with
-             Kubernetes is configured at this point. Also, only in-process  tests should contribute towards code
-             coverage, as we need to keep the execution time of these tests as low as possible. Ultimately if
-             we increase the confidence in our in-process tests (e.g. coverage) whilst keeping their execution time
-             down, the chances of them being  executed regularly increases and our confidence increases.
+             Only tests that do NOT require the deployment artifact to have been deployed to Kubernetes should
+             be executed here.
              -->
-            <id>in-process-verification</id>
+            <id>pre-deployment-verification</id>
             <properties>
-                <skipInProcessTests>false</skipInProcessTests>
+                <skipPreDeploymentTests>false</skipPreDeploymentTests>
             </properties>
             <build>
                 <plugins>
@@ -509,73 +452,21 @@
         <profile>
             <!--This profile is only executed once all Docker images have been built, and are ready for deployment
             to Kubernetes. The assumption here is that there will be some form of inter-process communication with
-            the code that has been deployed to the Docker image. This is the ideal context from which to execute
-            end to end tests or integration tests that need to communicate with an external service. Standard
+            the code that has been deployed to Kubernetes. Standard
             connectivity with Kubernetes will be provided by means of the entando.default.routing.suffix
             system property. No code coverage will be done here, as the expectation is that the code owners
             will ensure that these types of tests traverse inter-process points of failure rather than code
-            paths. This can not be done automatically.
+            paths.
             -->
-            <id>inter-process-verification</id>
+            <id>post-deployment-verification</id>
             <properties>
-                <skipInterProcessTests>false</skipInterProcessTests>
+                <skipPostDeploymentTests>false</skipPostDeploymentTests>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--
-            This profile executes the GraalVM compiler using Quarkus. The GraalVM build can be
-            customized in child pom's by means of the 'quarkus.native.additional-build-args' maven property
-            Please not that ! the format of this property value is extremely important:
-             comma separated, no spaces, no linebreaks
-            -->
-            <id>native</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>native-image</goal>
-                                </goals>
-                                <configuration>
-                                    <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--This profile uses Quarkus to place dependencies in target/lib. These can then
-            be added to a Dockerfile if needed to ensure the application can run as expected.
-            -->
-            <id>jvm</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <uberJar>false</uberJar>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
