@@ -43,13 +43,18 @@
         <tag>HEAD</tag>
     </scm>
     <properties>
+        <!--Properties to override in child poms -->
+        <preDeploymentTestGroups></preDeploymentTestGroups>
+        <postDeploymentTestGroups></postDeploymentTestGroups>
+        <checkstyleConfigLocation></checkstyleConfigLocation>
+        <owaspSuppressionFileLocation></owaspSuppressionFileLocation>
+
+        <!-- properties to control verification -->
         <verifyAllFailures>true</verifyAllFailures>
         <ignoreAllFailures>false</ignoreAllFailures>
         <skipPostDeploymentTests>true</skipPostDeploymentTests>
         <skipPreDeploymentTests>true</skipPreDeploymentTests>
-        <preDeploymentTestGroups></preDeploymentTestGroups>
-        <postDeploymentTestGroups></postDeploymentTestGroups>
-        <checkstyleConfigLocation></checkstyleConfigLocation>
+        <!-- Miscellaneous properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

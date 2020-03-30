@@ -21,8 +21,6 @@ pipelineConfig:
       build:
         replace: true
         steps:
-          - sh: jx step changelog --version v\$(cat ../../VERSION)
-            name: changelog
           - sh: >-
               mvn clean deploy \
                 -Dgpg.homedir=${GPG_HOMEDIR} \
@@ -31,4 +29,7 @@ pipelineConfig:
             name: mvn-deploy
       promote:
         replace: true
-        steps: []
+        steps:
+          - sh: jx step changelog --version v\$(cat ../../VERSION)
+            name: changelog
+
