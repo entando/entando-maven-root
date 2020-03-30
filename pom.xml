@@ -5,7 +5,7 @@
     <groupId>org.entando</groupId>
     <artifactId>entando-maven-root</artifactId>
     <version>6.1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>Entando Maven Root Parent POM</name>
     <description>Entando Maven Root Parent POM</description>
@@ -361,7 +361,7 @@
             This profile is intended for build environments where we want the entire build to succeed, only to
             inspect the build output afterwards to decided whether to fail or not
             -->
-            <id>cicd</id>
+            <id>no-fail</id>
             <properties>
                 <verifyAllFailures>false</verifyAllFailures>
                 <ignoreAllFailures>true</ignoreAllFailures>
