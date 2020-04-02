@@ -145,6 +145,7 @@
                         <!--JUNIT/XML required to verify failures from the pipeline-->
                         <formats>HTML,XML,JUNIT</formats>
                         <outputDirectory>target/site</outputDirectory>
+                        <retireJsAnalyzerEnabled>false</retireJsAnalyzerEnabled>
                     </configuration>
                     <dependencies>
                         <dependency>
