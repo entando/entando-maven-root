@@ -313,7 +313,7 @@
                                 <goal>jar</goal>
                             </goals>
                             <configuration>
-                                <additionalparam>${javaDocOptions}</additionalparam>
+                                <doclint>none</doclint>
                             </configuration>
                         </execution>
 
