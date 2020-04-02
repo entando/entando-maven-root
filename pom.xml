@@ -48,6 +48,7 @@
         <postDeploymentTestGroups></postDeploymentTestGroups>
         <checkstyleConfigLocation></checkstyleConfigLocation>
         <owaspSuppressionFileLocation></owaspSuppressionFileLocation>
+        <javaDocOptions>-Xdoclint:none</javaDocOptions>
 
         <!-- properties to control verification -->
         <verifyAllFailures>true</verifyAllFailures>
@@ -311,7 +312,11 @@
                             <goals>
                                 <goal>jar</goal>
                             </goals>
+                            <configuration>
+                                <additionalparam>${javaDocOptions}</additionalparam>
+                            </configuration>
                         </execution>
+
                     </executions>
                 </plugin>
                 <plugin>
