@@ -369,8 +369,14 @@
     <profiles>
         <profile>
             <!--
-            This profile is intended for build environments where we want the entire build to succeed, only to
-            inspect the build output afterwards to decided whether to fail or not
+            This profile is intended for build environments where we want the entire build to succeed, only to inspect
+            the build output afterwards to decided whether to fail or not. This profile achieves this goal by
+            manipulating a set of properties that will disable build failure when quality checks fail. One use case
+            for this profile is where the pull request on GitHub itself can be updated with status checks providing
+            feedback on exactly which quality checks have failed, and links to the various quality reports. Under
+            these circumstances it makes more sense to evaluate all quality checks in one go, and the providing full
+            feedback to the author of the pull request. Generally, developers are expected to run a clean Maven build
+            locally before pushing changes to a pull request.
             -->
             <id>no-fail</id>
             <properties>
@@ -379,11 +385,18 @@
             </properties>
         </profile>
         <profile>
-            <!--This profile is executed right in the beginning of the pipeline. For instance, this is the first step
-             that is executed to verify that the changes in the pull request comply to the coding standards in
-             Checkstyle, have test sufficient coverage and don't have any dependencies with known vulnerabilities.
-             Only tests that do NOT require the deployment artifact to have been deployed to Kubernetes should
-             be executed here.
+            <!--
+            This profile is typically executed right in the beginning of the pipeline. For instance, this is the first
+            step that is executed to verify that the changes in the pull request comply to the coding standards in 
+            Checkstyle, have test sufficient coverage from unit tests and integration tests and don't have any
+            dependencies with known vulnerabilities. This profile is also responsible for static code analysis, but
+            this is done directly against Sonar Cloud and the outcome of that process generally doesn't affect the build.
+
+            Only tests that do NOT require the deployment artifact to have been deployed to Kubernetes should be
+            executed here. Any other checks that can be done without needing to deploy the artifact should be done here.
+            Keep in mind that the build environment should also guarantee that certain common services are available,
+            such as Kubernetes itself and Keycloak.
+
              -->
             <id>pre-deployment-verification</id>
             <properties>
@@ -423,11 +436,14 @@
             </build>
         </profile>
         <profile>
-            <!--This profile is executed whenever a Maven artifact needs to be prepared and deployed to the
-            default, local Nexus in Entando's build environment. Note that this will not necessarily result in
+            <!--
+            This profile is executed whenever a Maven artifact needs to be prepared and deployed to the
+            default, local Nexus in Entando's Jenkins X build environment. Note that this will not necessarily result in
             a deployment to Maven Central, but the resulting artifact could potentially be deployed there if all the
-            necessary quality steps succeed. This profile will typically be invoked  before the integration tests
-            are executed, as these test may need to deploy the binary artifact (e.g. into a Docker image
+            necessary quality steps succeed. For this reason, this profile needs to fulfill Maven Central's requirements:
+            sources and JavaDocs need to be attached and the resulting artifact also needs to be signed using GPG, using
+            a key that is managed on our own build infrastructureThis profile will typically be invoked  before the
+            post-deployment tests  are executed, as these test may need to deploy the binary artifact (e.g. into a Docker image
             and/or Kubernetes).
             -->
             <id>prepare-for-nexus</id>
@@ -461,13 +477,12 @@
             </build>
         </profile>
         <profile>
-            <!--This profile is only executed once all Docker images have been built, and are ready for deployment
+            <!--
+            This profile is only executed once all Docker images have been built, and are ready for deployment
             to Kubernetes. The assumption here is that there will be some form of inter-process communication with
-            the code that has been deployed to Kubernetes. Standard
+            the code that has been deployed to Kubernetes, exposed using Ingresses and/or Routes. Standard
             connectivity with Kubernetes will be provided by means of the entando.default.routing.suffix
-            system property. No code coverage will be done here, as the expectation is that the code owners
-            will ensure that these types of tests traverse inter-process points of failure rather than code
-            paths.
+            system property. No code coverage will be done here.
             -->
             <id>post-deployment-verification</id>
             <properties>
