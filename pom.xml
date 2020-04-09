@@ -423,7 +423,7 @@
             </build>
         </profile>
         <profile>
-            <!--This profile is executed right whenever a Maven artifact needs to be prepared and deployed to the
+            <!--This profile is executed whenever a Maven artifact needs to be prepared and deployed to the
             default, local Nexus in Entando's build environment. Note that this will not necessarily result in
             a deployment to Maven Central, but the resulting artifact could potentially be deployed there if all the
             necessary quality steps succeed. This profile will typically be invoked  before the integration tests
