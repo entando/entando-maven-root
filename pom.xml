@@ -298,6 +298,8 @@
                                 <goal>jar</goal>
                             </goals>
                             <configuration>
+                                <!-- workaround for bug in Openjdk 11 -->
+                                <source>8</source>
                                 <doclint>none</doclint>
                             </configuration>
                         </execution>
@@ -415,6 +417,10 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-project-info-reports-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
