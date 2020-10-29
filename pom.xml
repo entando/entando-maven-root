@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.entando</groupId>
     <artifactId>entando-maven-root</artifactId>
-    <version>6.2.1</version>
+    <version>6.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Entando Maven Root Parent POM</name>
@@ -48,7 +48,6 @@
         <postDeploymentTestGroups></postDeploymentTestGroups>
         <checkstyleConfigLocation></checkstyleConfigLocation>
         <owaspSuppressionFileLocation></owaspSuppressionFileLocation>
-        <javaDocOptions>-Xdoclint:none</javaDocOptions>
 
         <!-- properties to control verification -->
         <verifyAllFailures>true</verifyAllFailures>
@@ -291,19 +290,19 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <doclint>none</doclint>
+                        <!-- workaround for bug in Openjdk 11 -->
+                        <source>8</source>
+                        <detectJavaApiLink>false</detectJavaApiLink>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>attach-javadocs</id>
                             <goals>
                                 <goal>jar</goal>
                             </goals>
-                            <configuration>
-                                <!-- workaround for bug in Openjdk 11 -->
-                                <source>8</source>
-                                <doclint>none</doclint>
-                            </configuration>
                         </execution>
-
                     </executions>
                 </plugin>
                 <plugin>
