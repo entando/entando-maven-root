@@ -48,6 +48,7 @@
         <postDeploymentTestGroups></postDeploymentTestGroups>
         <checkstyleConfigLocation></checkstyleConfigLocation>
         <owaspSuppressionFileLocation></owaspSuppressionFileLocation>
+        <skipLicenseDownload>false</skipLicenseDownload>
 
         <!-- properties to control verification -->
         <verifyAllFailures>true</verifyAllFailures>
@@ -84,6 +85,7 @@
         <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
         <dependency-check-maven.version>6.0.3</dependency-check-maven.version>
         <maven-surefire-report-plugin.version>3.0.0-M4</maven-surefire-report-plugin.version>
+        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
     </properties>
     <issueManagement>
         <system>Github</system>
@@ -119,6 +121,22 @@
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${license-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>download-licenses</id>
+                            <goals>
+                                <goal>aggregate-download-licenses</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <skipAggregateDownloadLicenses>${skipLicenseDownload}</skipAggregateDownloadLicenses>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -438,6 +456,10 @@
             <id>prepare-for-nexus</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
