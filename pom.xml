@@ -313,6 +313,7 @@
                         <!-- workaround for bug in Openjdk 11 -->
                         <source>8</source>
                         <detectJavaApiLink>false</detectJavaApiLink>
+                        <quiet>true</quiet>
                     </configuration>
                     <executions>
                         <execution>
