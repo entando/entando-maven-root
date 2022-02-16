@@ -67,7 +67,7 @@
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
         <!--JDBC Driver versions -->
-        <postgresql.driver.version>42.2.8</postgresql.driver.version>
+        <postgresql.driver.version>42.3.3</postgresql.driver.version>
         <!-- plugin  versions -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
