@@ -190,6 +190,20 @@
                                 <goal>report</goal>
                             </goals>
                         </execution>
+                        <execution>
+                            <phase>pre-integration-test</phase>
+                            <id>prepare-agent-integration</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <phase>post-integration-test</phase>
+                            <id>report-integration</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
                     </executions>
                 </plugin>
                 <plugin>
@@ -505,6 +519,10 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
