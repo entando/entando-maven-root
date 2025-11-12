@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.entando</groupId>
     <artifactId>entando-maven-root</artifactId>
-    <version>7.4.0-SNAPSHOT</version>
+    <version>7.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Entando Maven Root Parent POM</name>
@@ -310,8 +310,8 @@
                     <version>${maven-javadoc-plugin.version}</version>
                     <configuration>
                         <doclint>none</doclint>
-                        <!-- workaround for bug in Openjdk 11 -->
-                        <source>8</source>
+                        <!-- Updated to Java 17 for Jakarta migration -->
+                        <source>${maven.compiler.source}</source>
                         <detectJavaApiLink>false</detectJavaApiLink>
                         <quiet>true</quiet>
                     </configuration>
